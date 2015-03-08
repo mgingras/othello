@@ -1,16 +1,18 @@
 .board
   div
     p(style='position:absolute;top:0;left:5;font-size:10px;') Press esc to return to main menu
+    p(style='position:absolute;top:0;right:5;font-size:10px;')= turn
   each row, y in board
     each block, x in row
       -block = board[x][y]
-      if block.type === 'player1'
+      if block.type === 'p0'
+        .block(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
+          .p0
+          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
+
+      else if block.type === 'p1'
         .block(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
           .p1
-          //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)
-      else if block.type === 'player2'
-        .block(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
-          .p2
       else if block.type === 'empty'
         .block.empty(class="#{JSON.stringify(block.pos)} #{x}-#{y}")
           //- p(style="color:red;font-size:10px;")=JSON.stringify(block.pos)

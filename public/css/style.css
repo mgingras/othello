@@ -18,35 +18,29 @@ a {
 }
 
 .block {
-  width: 5%;
+  width: 12.5%;
   /* position: absolute; */
   float: left;
-  height: 5%;
+  height: 12.5%;
   border: 1px solid black;
 }
-
-.border {
-  background-color: #929292;
+.p0 {
+  margin: 2.5%;
+  width: 95%;
+  height: 95%;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 65px;
+  border: 1px solid black;
+  background-color: black;
 }
 
-.food {
-  background-color: #FF2B1A;
-}
-
-.wall {
-  background-color: #92520F;
-}
-.empty {
-  background-color: #fff;
-}
-
-.snake.head {
-  background-color: #00F72B;
-}
-.snake.body {
-  background-color: #7D5AFB;
-}
-
-.snake.tail{
-  background-color: #071F90;
+.p1 {
+  margin: 2.5%;
+  width: 95%;
+  height: 95%;
+  -webkit-border-radius: 25px;
+  -moz-border-radius: 25px;
+  border-radius: 65px;
+  border: 1px solid black;
 }
