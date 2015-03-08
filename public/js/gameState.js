@@ -1,5 +1,6 @@
 var players = [];
 var turn; // Player Number
+var board;
 
 $(function() {
   $(document).on('keydown', function(e) {
@@ -28,7 +29,7 @@ function newGame(gameType) {
 }
 
 function updateBoard() {
-  var board = new Board(players);
+  board = new Board(players, turn);
   var htmlBoard = renderBoard({
     board: board.board,
     turn: turn ? 'White\'s turn' : 'Black\'s turn'
@@ -46,9 +47,10 @@ function takeTurn() {
         try{
           move = JSON.parse(e.target.classList[2]);
         } catch(e){}
-        if(move){
+        var valid = board.validateMove(move, turn);
+        if(move && board.validateMove(move, turn)){
           $(document).off('click');
-          players[turn].move(move);
+          players[turn].move(move, board.board);
           turn = (turn === 0) ? 1 : 0; // Switch turn
           updateBoard();
         }
@@ -56,7 +58,7 @@ function takeTurn() {
       console.dir(e);
     })
   } else {
-    players[turn].move();
+    players[turn].move(board.board);
   }
   
 }

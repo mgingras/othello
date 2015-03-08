@@ -36,12 +36,15 @@ function Player(isAI, pNum) {
 }
 
 Player.prototype.move = function(/*arguments*/) {
+  var move;
   if(!this.isAI){
+    move = arguments[0];
     this.pieces.push({
       player: this.pNum,
       pos: arguments[0]
     });
   } else{
-    // DOAI
+    var board = arguments[0];
   }
+  this.lastMove = move;
 }
