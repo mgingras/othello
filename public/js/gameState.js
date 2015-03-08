@@ -9,6 +9,10 @@ $(function() {
       newGame(gameType);
     }
   });
+  $('#start').on('click', function() {
+    gameType = $("input[type='radio'][name='gameType']:checked").val();
+    newGame(gameType);
+  })
 });
 
 function newGame(gameType) {
