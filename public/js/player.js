@@ -56,3 +56,7 @@ Player.prototype.move = function(arg1, force) {
   }
   this.lastMove = move;
 }
+Player.prototype._getMove = function(board) {
+  var allMoves = board.getAllMoves(this.pNum);
+  return allMoves[0].pos;
+}

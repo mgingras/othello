@@ -6,8 +6,6 @@ function AI(pNum, maxDeapth) {
 AI.prototype.move = function(arguments) {
 	var depth = 0;
 	while(depth < this.maxDepth){
-
-
 		depth++;
 	}
 }

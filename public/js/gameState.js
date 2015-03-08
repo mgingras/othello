@@ -61,14 +61,16 @@ function takeTurn() {
         var valid = board.validateMove(move, turn);
         if(move && board.validateMove(move, turn)){
           $(document).off('click');
-          players[turn].move(move, board.board);
+          players[turn].move(move, board);
           turn = (turn === 0) ? 1 : 0; // Switch turn
           updateBoard();
         }
       }
     })
   } else {
-    players[turn].move(board.board);
+    players[turn].move(board);
+    turn = (turn === 0) ? 1 : 0; // Switch turn
+    updateBoard();
   }
 }
 
