@@ -12,7 +12,11 @@ $(function() {
 });
 
 function newGame(gameType) {
-  console.log('here')
+  $(document).off('keydown').on('keydown', function(e) {
+    if(e.keyCode === 27){
+      location.reload();
+    }
+  });
   players = [];
   if(gameType === 'PvC'){
     players.push((new Player(false, 0)));
@@ -35,6 +39,7 @@ function updateBoard() {
     turn: turn ? 'White\'s turn' : 'Black\'s turn'
   });
   $('body').html(htmlBoard);
+  detectGameOver();
   takeTurn();
 }
 
@@ -60,5 +65,17 @@ function takeTurn() {
   } else {
     players[turn].move(board.board);
   }
-  
+}
+
+function detectGameOver() {
+  if((players[0].pieces.length + players[1].pieces.length) === 64 || board.detectGameOver(turn)){
+    if(players[0].pieces.length === players[1].pieces.length){
+      alert('Game over: Tie Game!\nBlack: ' + players[0].pieces.length + '\nWhite: ' + players[1].pieces.length);
+      return;
+      // return location.reload();
+    }
+    var p0Wins = players[0].pieces.length > players[1].pieces.length
+    alert('Game Over: ' + (p0Wins? 'Player 1 wins!!!' : 'Player 2 wins!!!') + '\nBlack: ' + players[0].pieces.length + '\nWhite: ' + players[1].pieces.length);
+    // return location.reload();
+  }
 }

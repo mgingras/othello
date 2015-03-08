@@ -242,3 +242,147 @@ Board.prototype._getDownRight = function(x, y, turn){
   }
   return false;
 }
+
+// DETECT GAME OVER SHIT
+Board.prototype.detectGameOver = function(turn){
+  var piece;
+  for (var i = players[turn].pieces.length - 1; i >= 0; i--) {
+    piece = players[turn].pieces[i];
+    if(this._movesAvailable(piece.pos, turn)){
+      return false;
+    }
+  }
+  return true;
+}
+
+Board.prototype._movesAvailable = function(move, turn){
+  var x = move.x;
+  var y = move.y;
+  var valid = false;
+  valid = valid || this._movesUp(x, y - 1, turn);
+  valid = valid || this._movesDown(x, y + 1, turn);
+  valid = valid || this._movesLeft(x - 1, y, turn);
+  valid = valid || this._movesRight(x + 1, y, turn);
+  valid = valid || this._movesUpLeft(x - 1, y - 1, turn);
+  valid = valid || this._movesDownLeft(x - 1, y + 1, turn);
+  valid = valid || this._movesUpRight(x + 1, y - 1, turn);
+  valid = valid || this._movesDownRight(x + 1, y + 1, turn);
+  return !!valid;
+}
+
+Board.prototype._movesUp = function(x, y, turn){
+  var pieces = [];
+  while(y >= 0){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    y--;
+  }
+  return false;
+}
+Board.prototype._movesDown = function(x, y, turn){
+  var pieces = [];
+  while(y <= 7){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    y++;
+  }
+  return false;
+}
+Board.prototype._movesLeft = function(x, y, turn){
+  var pieces = [];
+  while(x >= 0){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    x--;
+  }
+  return false;
+}
+Board.prototype._movesRight = function(x, y, turn){
+  var pieces = [];
+  while(x <= 7){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    x++;
+  }
+  return false;
+}
+Board.prototype._movesUpLeft = function(x, y, turn){
+  var pieces = [];
+  while(x >= 0 && y >= 0){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    x--;
+    y--;
+  }
+  return false;
+}
+Board.prototype._movesDownLeft = function(x, y, turn){
+  var pieces = [];
+  while(x >= 0 && y <= 7){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    x--;
+    y++
+  }
+  return false;
+}
+Board.prototype._movesUpRight = function(x, y, turn){
+  var pieces = [];
+  while(x <= 7 && y >= 0){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    x++;
+    y--;
+  }
+  return false;
+}
+Board.prototype._movesDownRight = function(x, y, turn){
+  var pieces = [];
+  while(x <= 7 && y <= 7){
+    if(this.board[x][y].type === 'empty'){
+      return pieces.length === 0 ? false : true;
+    }
+    if(this.board[x][y].type === 'p'+turn){
+      return false;
+    }
+    pieces.push(this.board[x][y]);
+    x++;
+    y++;
+  }
+  return false;
+}
