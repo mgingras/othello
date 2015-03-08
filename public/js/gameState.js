@@ -80,7 +80,7 @@ function detectGameOver() {
       // return location.reload();
     }
     var p0Wins = players[0].pieces.length > players[1].pieces.length
-    alert('Game Over: ' + (p0Wins? 'Player 1 wins!!!' : 'Player 2 wins!!!') + '\nBlack: ' + players[0].pieces.length + '\nWhite: ' + players[1].pieces.length);
+    alert('Game Over: ' + (p0Wins? 'Black wins!!!' : 'White wins!!!') + '\nBlack: ' + players[0].pieces.length + '\nWhite: ' + players[1].pieces.length);
     // return location.reload();
   }
 }

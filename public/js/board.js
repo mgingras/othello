@@ -1,6 +1,7 @@
 function Board(players, turn) {
   this.height = 8;
   this.width = this.height;
+  this.players = players;
 
   this._placeBoard();
   this._placePlayers(players);

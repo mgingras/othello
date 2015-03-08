@@ -1,50 +1,58 @@
-function Player(isAI, pNum) {
+function Player(isAI, pNum, pieces) {
   this.isAI = isAI;
   this.pNum = pNum;
   this.pieces = [];
-  if(pNum === 1){
-    this.pieces.push({
-      player: pNum,
-      pos: {
-        x: 3,
-        y: 3
-      }
-    });
-    this.pieces.push({
-      player: pNum,
-      pos: {
-        x: 4,
-        y: 4
-      }
-    });
-  } else{
-    this.pieces.push({
-      player: pNum,
-      pos: {
-        x: 4,
-        y: 3
-      }
-    });
-    this.pieces.push({
-      player: pNum,
-      pos: {
-        x: 3,
-        y: 4
-      }
-    });
+  if(!pieces){
+    if(pNum === 1){
+      this.pieces.push({
+        player: pNum,
+        pos: {
+          x: 3,
+          y: 3
+        }
+      });
+      this.pieces.push({
+        player: pNum,
+        pos: {
+          x: 4,
+          y: 4
+        }
+      });
+    } else {
+      this.pieces.push({
+        player: pNum,
+        pos: {
+          x: 4,
+          y: 3
+        }
+      });
+      this.pieces.push({
+        player: pNum,
+        pos: {
+          x: 3,
+          y: 4
+        }
+      });
+    }
+  }else{
+    this.pieces = pieces;
   }
 }
 
-Player.prototype.move = function(/*arguments*/) {
-  var move;
-  if(!this.isAI){
-    move = arguments[0];
+Player.prototype.move = function(arg1, force) {
+  if(!this.isAI || force){
+    move = arg1;
     this.pieces.push({
       player: this.pNum,
-      pos: arguments[0]
+      pos: move
     });
   } else{
-    var board = arguments[0];
+    var board = arg1;
+    move = this._getMove(board);
+    this.pieces.push({
+      player: this.pNum,
+      pos: move
+    });
   }
   this.lastMove = move;
 }

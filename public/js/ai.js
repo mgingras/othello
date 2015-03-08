@@ -1,16 +1,24 @@
-function AI() {
-
+function AI(pNum, maxDeapth) {
+	this.pNum = pNum;
+	this.maxDeapth = maxDeapth || 5;
 }
 
 AI.prototype.move = function(arguments) {
-	// body...
+	var depth = 0;
+	while(depth < this.maxDepth){
+
+
+		depth++;
+	}
 }
 
 // Heuristic one. Frontier Disks - Less disks next to empty spots to minimize oponent mobility.
-AI.prototype.frontierDisks = function(node, board) {
-	var x = node.pos.x;
-	var y = node.pos.y;
+// High score is better
+AI.prototype.frontierDisks = function(pos, board) {
+	var x = pos.x;
+	var y = pos.y;
 	var val = 0;
+	board = board.board;
 	// Left
 	if(x > 0){
 		if(board[x-1][y].type !== 'empty'){
@@ -61,7 +69,13 @@ AI.prototype.frontierDisks = function(node, board) {
 	}
 	return val;
 }
-// Heuristic two. Max number blocks loseable in next turn
-AI.prototype.minLosses = function(arguments) {
-	
+// Heuristic two. Mobility, how many moves are avaliable given taking a specific block
+AI.prototype.mobility = function(pos, board) {
+	var tempPlayers = _.clone(board.players, true);
+	for (var i = tempPlayers.length - 1; i >= 0; i--) {
+		tempPlayers[i] = new Player(tempPlayers[i].isAI, tempPlayers[i].pNum, tempPlayers[i].pieces);
+	};
+	tempPlayers[this.pNum].move(pos, true); // !force
+	var tempBoard = new Board(tempPlayers, this.pNum);
+	return tempBoard.getAllMoves(this.pNum).length;
 }
