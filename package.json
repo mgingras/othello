@@ -1,0 +1,15 @@
+{
+  "name": "Othello-AI",
+  "version": "1.0.0",
+  "description": "Othello with AI player using MiniMax search with Alpha-Beta pruning.",
+  "engines": {
+    "node": "0.10.x",
+    "npm": "1.2.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "harp": "^0.14.0"
+  }
+}
