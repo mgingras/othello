@@ -76,7 +76,7 @@ Board.prototype._resolveBoard = function(players, turn){
       return piece.pos.x === flipped[j].pos.x && piece.pos.y === flipped[j].pos.y;
     })
   };
-  console.dir(flipped);
+  // console.dir(flipped);
 }
 
 Board.prototype.validateMove = function(move, turn){
@@ -277,7 +277,7 @@ Board.prototype._movesAvailable = function(move, turn){
   moves = moves.concat(this._movesDownLeft(x - 1, y + 1, turn));
   moves = moves.concat(this._movesUpRight(x + 1, y - 1, turn));
   moves = moves.concat(this._movesDownRight(x + 1, y + 1, turn));
-  console.dir(moves);
+  // console.dir(moves);
   return moves;
 }
 

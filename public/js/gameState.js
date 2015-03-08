@@ -40,11 +40,13 @@ function updateBoard() {
   board = new Board(players, turn);
   var htmlBoard = renderBoard({
     board: board.board,
-    turn: turn ? 'White\'s turn' : 'Black\'s turn'
+    turn: turn ? 'White\'s' : 'Black\'s'
   });
   $('body').html(htmlBoard);
-  detectGameOver();
-  takeTurn();
+  setTimeout(function() {
+    detectGameOver();
+    takeTurn();
+  }, 100);
 }
 
 
@@ -64,7 +66,6 @@ function takeTurn() {
           updateBoard();
         }
       }
-      console.dir(e);
     })
   } else {
     players[turn].move(board.board);
