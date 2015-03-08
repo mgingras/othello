@@ -243,12 +243,21 @@ Board.prototype._getDownRight = function(x, y, turn){
   return false;
 }
 
+Board.prototype.getAllMoves = function(turn) {
+  var moves = [];
+  for (var i = players[turn].pieces.length - 1; i >= 0; i--) {
+    piece = players[turn].pieces[i];
+    moves = moves.concat(this._movesAvailable(piece.pos, turn));
+  }
+  return moves;
+}
+
 // DETECT GAME OVER SHIT
 Board.prototype.detectGameOver = function(turn){
   var piece;
   for (var i = players[turn].pieces.length - 1; i >= 0; i--) {
     piece = players[turn].pieces[i];
-    if(this._movesAvailable(piece.pos, turn)){
+    if(this._movesAvailable(piece.pos, turn).length > 0){
       return false;
     }
   }
@@ -258,131 +267,133 @@ Board.prototype.detectGameOver = function(turn){
 Board.prototype._movesAvailable = function(move, turn){
   var x = move.x;
   var y = move.y;
-  var valid = false;
-  valid = valid || this._movesUp(x, y - 1, turn);
-  valid = valid || this._movesDown(x, y + 1, turn);
-  valid = valid || this._movesLeft(x - 1, y, turn);
-  valid = valid || this._movesRight(x + 1, y, turn);
-  valid = valid || this._movesUpLeft(x - 1, y - 1, turn);
-  valid = valid || this._movesDownLeft(x - 1, y + 1, turn);
-  valid = valid || this._movesUpRight(x + 1, y - 1, turn);
-  valid = valid || this._movesDownRight(x + 1, y + 1, turn);
-  return !!valid;
+  var moves = [];
+
+  moves = moves.concat(this._movesUp(x, y - 1, turn));
+  moves = moves.concat(this._movesDown(x, y + 1, turn));
+  moves = moves.concat(this._movesLeft(x - 1, y, turn));
+  moves = moves.concat(this._movesRight(x + 1, y, turn));
+  moves = moves.concat(this._movesUpLeft(x - 1, y - 1, turn));
+  moves = moves.concat(this._movesDownLeft(x - 1, y + 1, turn));
+  moves = moves.concat(this._movesUpRight(x + 1, y - 1, turn));
+  moves = moves.concat(this._movesDownRight(x + 1, y + 1, turn));
+  console.dir(moves);
+  return moves;
 }
 
 Board.prototype._movesUp = function(x, y, turn){
   var pieces = [];
   while(y >= 0){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : [this.board[x][y]];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     y--;
   }
-  return false;
+  return [];
 }
 Board.prototype._movesDown = function(x, y, turn){
   var pieces = [];
   while(y <= 7){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     y++;
   }
-  return false;
+  return [];
 }
 Board.prototype._movesLeft = function(x, y, turn){
   var pieces = [];
   while(x >= 0){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     x--;
   }
-  return false;
+  return [];
 }
 Board.prototype._movesRight = function(x, y, turn){
   var pieces = [];
   while(x <= 7){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     x++;
   }
-  return false;
+  return [];
 }
 Board.prototype._movesUpLeft = function(x, y, turn){
   var pieces = [];
   while(x >= 0 && y >= 0){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     x--;
     y--;
   }
-  return false;
+  return [];
 }
 Board.prototype._movesDownLeft = function(x, y, turn){
   var pieces = [];
   while(x >= 0 && y <= 7){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     x--;
     y++
   }
-  return false;
+  return [];
 }
 Board.prototype._movesUpRight = function(x, y, turn){
   var pieces = [];
   while(x <= 7 && y >= 0){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     x++;
     y--;
   }
-  return false;
+  return [];
 }
 Board.prototype._movesDownRight = function(x, y, turn){
   var pieces = [];
   while(x <= 7 && y <= 7){
     if(this.board[x][y].type === 'empty'){
-      return pieces.length === 0 ? false : true;
+      return pieces.length === 0 ? [] : this.board[x][y];
     }
     if(this.board[x][y].type === 'p'+turn){
-      return false;
+      return [];
     }
     pieces.push(this.board[x][y]);
     x++;
     y++;
   }
-  return false;
+  return [];
 }
