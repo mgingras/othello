@@ -75,14 +75,20 @@ function takeTurn() {
 }
 
 function detectGameOver() {
-  if((players[0].pieces.length + players[1].pieces.length) === 64 || board.detectGameOver(turn)){
+  var playerToMove = board.detectGameOver(turn);
+  var noMoreMoves = false;
+  if(playerToMove >= 0){
+    turn = playerToMove;
+  } else {
+    noMoreMoves = true;
+  }
+  if((players[0].pieces.length + players[1].pieces.length) === 64 || noMoreMoves){
     if(players[0].pieces.length === players[1].pieces.length){
       alert('Game over: Tie Game!\nBlack: ' + players[0].pieces.length + '\nWhite: ' + players[1].pieces.length);
-      return;
-      // return location.reload();
+      return location.reload();
     }
     var p0Wins = players[0].pieces.length > players[1].pieces.length
     alert('Game Over: ' + (p0Wins? 'Black wins!!!' : 'White wins!!!') + '\nBlack: ' + players[0].pieces.length + '\nWhite: ' + players[1].pieces.length);
-    // return location.reload();
+    return location.reload();
   }
 }

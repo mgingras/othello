@@ -254,15 +254,25 @@ Board.prototype.getAllMoves = function(turn) {
 }
 
 // DETECT GAME OVER SHIT
+// Returns current players turn if they have moves otherwise
+// returns the turn of the other player if they have moves
+// if no player has moves returns -1
 Board.prototype.detectGameOver = function(turn){
   var piece;
   for (var i = players[turn].pieces.length - 1; i >= 0; i--) {
     piece = players[turn].pieces[i];
     if(this._movesAvailable(piece.pos, turn).length > 0){
-      return false;
+      return turn;
     }
   }
-  return true;
+  var otherPlayer = turn ? 0 : 1;
+  for (var i = players[otherPlayer].pieces.length - 1; i >= 0; i--) {
+    piece = players[otherPlayer].pieces[i];
+    if(this._movesAvailable(piece.pos, otherPlayer).length > 0){
+      return otherPlayer;
+    }
+  }
+  return -1;
 }
 
 Board.prototype._movesAvailable = function(move, turn){
