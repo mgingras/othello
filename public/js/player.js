@@ -1,18 +1,15 @@
 /**
  * Player object
- * @param {Object|Boolean} AI     If the player is AI controlled
- * @param {[number]}  pNum     The player number
- * @param {[object]}  [pieces] Optional array of pieces the player controlls
+ * @param {Object|Boolean} AIparams     If the player is AI controlled
+ * @param {[number]}  pNum              The player number
+ * @param {[object]}  [pieces]          Optional array of pieces the player controlls
  */
-function Player(AI, pNum, pieces) {
-  this.isAI = !!AI;
-  if(isAI){
-    this.typeofAI = isAI.aiType;
-  }
+function Player(AIparams, pNum, pieces) {
+  this.isAI = !!AIparams;
   this.pNum = pNum;
   this.pieces = [];
   if(this.isAI){
-    this.AI = new AI(this.pNum, this.typeofAI);
+    this.AI = new AI(this.pNum, AIparams.type);
   }
 
   // Default starting pieces if the pieces aren't passed in
@@ -84,9 +81,9 @@ Player.prototype._getMove = function(board) {
   if(!this.isAI){
     return console.error('Tried to use _getMove by player not AI');
   }
-
-  var allMoves = board.getAllMoves(this.pNum);
-  if(allMoves.length > 0){
-    return allMoves[0].pos;
-  }
+  return this.AI.move(board);
+  // var allMoves = ;
+  // if(allMoves.length > 0){
+  //   return allMoves[0].pos;
+  // }
 }

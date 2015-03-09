@@ -24,10 +24,10 @@ function newGame(gameType) {
   players = [];
   if(gameType === 'PvC'){
     players.push((new Player(false, 0)));
-    players.push((new Player(true, 1)));
+    players.push((new Player({type:'frontier'}, 1)));
   } else if(gameType === 'CvC'){
-    players.push((new Player(true, 0)));
-    players.push((new Player(true, 1)));
+    players.push((new Player({type:'frontier'}, 0)));
+    players.push((new Player({type:'mobility'}, 1)));
   } else if(gameType === 'PvP'){
     players.push((new Player(false, 0)));
     players.push((new Player(false, 1)));

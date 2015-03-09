@@ -1,6 +1,18 @@
 function AI(pNum, type, maxDeapth) {
 	this.pNum = pNum;
 	this.maxDeapth = maxDeapth || 5;
+	this.type = type;
+
+	// Use frontier disks heuristics, mobility heuristics or combined
+	if(this.type === 'frontier'){
+		this.calculateValue = this.frontierDisks;
+	}else if(this.type === 'mobility'){
+		this.calculateValue = this.mobility;
+	} else {
+		this.calculateValue = function(pos, board) {
+			return this.mobility(pos, board) + this.frontierDisks(pos, board);
+		};
+	}
 }
 
 /**
@@ -11,10 +23,23 @@ function AI(pNum, type, maxDeapth) {
  * @return {Number} pos.y    The y coordinate to move to
  */
 AI.prototype.move = function(board) {
-	var depth = 0;
-	while(depth < this.maxDepth){
-		depth++;
+	// var depth = 0;
+	// while(depth < this.maxDepth){
+	// 	depth++;
+	// }
+
+	var allMoves = board.getAllMoves(this.pNum);
+	console.dir(allMoves);
+	var move, bestMove, bestScore = 0, score;
+	for (var i = allMoves.length - 1; i >= 0; i--) {
+		move = allMoves[i];
+		score = this.calculateValue(move.pos, board);
+		if(score > bestScore){
+			bestScore = score;
+			bestMove = move;
+		}
 	}
+	return bestMove ? bestMove.pos : false;
 }
 
 /**
