@@ -1,17 +1,23 @@
 function AI(pNum, type, maxDepth) {
   this.pNum = pNum;
-  this.maxDepth = maxDepth || 2;
+  this.maxDepth = maxDepth || 5;
   this.type = type;
 
   // Use frontier disks heuristics, mobility heuristics or combined
   if(this.type === 'frontier'){
-    this.calculateValue = this.frontierDisks;
+    this.calculateValue = function(board) {
+      return this.frontierDisks(board) + this.gameOver(board);
+    }.bind(this);
+    // this.calculateValue = this.frontierDisks;
   }else if(this.type === 'mobility'){
-    this.calculateValue = this.mobility;
+    this.calculateValue = function(board) {
+      return this.mobility(board) + this.gameOver(board);
+    }.bind(this);
+    // this.calculateValue = this.mobility;
   } else {
     this.calculateValue = function(board) {
-      return this.mobility(board) + this.frontierDisks(board);
-    };
+      return this.mobility(board) + this.frontierDisks(board) + this.gameOver(board);
+    }.bind(this);
   }
 }
 
@@ -27,10 +33,10 @@ AI.prototype.move = function(board) {
   if(board.getAllMoves(this.pNum).length === 0){
     return;
   }
-  var res = this.minimax(board, 0, this.pNum, this.maxDepth);
+  var res = this.minimax(board, 0, this.pNum, this.maxDepth, -1000, 1000);
   console.log(this.visits)
   console.dir(res);
-  return res.move.pos;
+  return res.pos;
   // var allMoves = board.getAllMoves(this.pNum);
   // console.dir(allMoves);
   // var move, bestMove, bestScore = 0, score;
@@ -61,46 +67,39 @@ AI.prototype.minimax = function(board, depth, pNum, maxDepth, alpha, beta) {
     return this.calculateValue(board);
   }
 
-  var score, move, moves = board.getAllMoves(pNum);
+  var newBoard, score, move, moves = board.getAllMoves(pNum);
   if(pNum === this.pNum){
     // Maximize
     for (var i = moves.length - 1; i >= 0; i--) {
       move = moves[i];
+      newBoard = board.copy();
       score = this.minimax(newBoard, (depth + 1), (pNum ? 0 : 1), maxDepth, alpha, beta);
       if(score > alpha){
         alpha = score;
-        if(depth === 0){
-          return move;
-        } else {
-          return score;
-        }
       }
       if(alpha >= beta){
         break;
       }
-    };
-    return _.max(_.transform(moves, function(results, move) {
-      var newBoard = board.copy();
-      this._applyMove(newBoard, move.pos, pNum);
-      results.push({
-        score: this.minimax(newBoard, (depth + 1), (pNum ? 0 : 1), maxDepth).score,
-        move: move
-      });
-    }.bind(this)), function(res) {
-      return res.score;
-    }.bind(this));
+    }
+    if(depth === 0){
+      return move;
+    } else {
+      return alpha;
+    }
   } else {
     // Minimize
-    return _.min(_.transform(moves, function(results, move) {
-      var newBoard = board.copy();
-      this._applyMove(newBoard, move.pos, pNum);
-      results.push({
-        score: this.minimax(newBoard, (depth + 1), (pNum ? 0 : 1), maxDepth).score,
-        move: move
-      });
-    }.bind(this)), function(res) {
-      return res.score;
-    }.bind(this))
+    for (var i = moves.length - 1; i >= 0; i--) {
+      move = moves[i];
+      newBoard = board.copy();
+      score = this.minimax(newBoard, (depth + 1), (pNum ? 0 : 1), maxDepth, alpha, beta);
+      if(score < beta){
+        beta = score;
+      }
+      if(alpha >= beta){
+        break;
+      }
+    }
+    return beta;
   }
 }
 
