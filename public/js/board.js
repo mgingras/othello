@@ -4,9 +4,9 @@ function Board(players, turn) {
   this.players = players;
 
   this._placeBoard();
-  this._placePlayers(players);
-  this._resolveBoard(players, turn);
-  this._placePlayers(players);
+  this._placePlayers();
+  this._resolveBoard(turn);
+  this._placePlayers();
 }
 
 // Place walls and empty slots
@@ -27,11 +27,11 @@ Board.prototype._placeBoard = function() {
   this.board = board;
 };
 
-Board.prototype._placePlayers = function(players) {
+Board.prototype._placePlayers = function() {
   var player;
   var piece;
-  for (var i = players.length - 1; i >= 0; i--) {
-    player = players[i]
+  for (var i = this.players.length - 1; i >= 0; i--) {
+    player = this.players[i]
     for (var j = player.pieces.length - 1; j >= 0; j--) {
       piece = player.pieces[j];
       this.board[piece.pos.x][piece.pos.y] = {
@@ -42,12 +42,12 @@ Board.prototype._placePlayers = function(players) {
   };
 }
 
-Board.prototype._resolveBoard = function(players, turn){
+Board.prototype._resolveBoard = function(turn){
   var turn = turn ? 0 : 1;
-  if(!players[turn].lastMove){
+  if(!this.players[turn].lastMove){
     return; // First turn
   }
-  var move = players[turn].lastMove;
+  var move = this.players[turn].lastMove;
   var flipped = [];
   var up = this._getUp(move.x, move.y - 1, turn);
   flipped = flipped.concat(up ? up : []);
@@ -66,14 +66,14 @@ Board.prototype._resolveBoard = function(players, turn){
   var downRight = this._getDownRight(move.x + 1, move.y + 1, turn);
   flipped = flipped.concat(downRight ? downRight : []);
   for (var i = flipped.length - 1; i >= 0; i--) {
-    players[turn].pieces.push({
+    this.players[turn].pieces.push({
       player: turn,
       pos: flipped[i].pos
     });
   };
   var otherPlayer = turn ? 0 : 1;
   for (var j = flipped.length - 1; j >= 0; j--) {
-    _.remove(players[otherPlayer].pieces, function(piece) {
+    _.remove(this.players[otherPlayer].pieces, function(piece) {
       return piece.pos.x === flipped[j].pos.x && piece.pos.y === flipped[j].pos.y;
     })
   };
@@ -246,8 +246,8 @@ Board.prototype._getDownRight = function(x, y, turn){
 
 Board.prototype.getAllMoves = function(turn) {
   var moves = [];
-  for (var i = players[turn].pieces.length - 1; i >= 0; i--) {
-    piece = players[turn].pieces[i];
+  for (var i = this.players[turn].pieces.length - 1; i >= 0; i--) {
+    piece = this.players[turn].pieces[i];
     moves = moves.concat(this._movesAvailable(piece.pos, turn));
   }
   return moves;
@@ -407,4 +407,12 @@ Board.prototype._movesDownRight = function(x, y, turn){
     y++;
   }
   return [];
+}
+
+Board.prototype.copy = function() {
+  var tempPlayers = _.clone(this.players, true);
+  for (var i = tempPlayers.length - 1; i >= 0; i--) {
+    tempPlayers[i] = new Player(tempPlayers[i].isAI, tempPlayers[i].pNum, tempPlayers[i].pieces);
+  };
+  return new Board(tempPlayers, this.pNum);
 }
