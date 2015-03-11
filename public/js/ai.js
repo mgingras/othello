@@ -1,22 +1,22 @@
 function AI(pNum, type, maxDepth) {
   this.pNum = pNum;
-  this.maxDepth = maxDepth || 5;
+  this.maxDepth = maxDepth || 4;
   this.type = type;
 
   // Use frontier disks heuristics, mobility heuristics or combined
-  if(this.type === 'frontier'){
+  if(this.type === 'coinParity'){
     this.calculateValue = function(board) {
-      return this.frontierDisks(board) + this.gameOver(board);
+      return this.coinParity(board);
     }.bind(this);
     // this.calculateValue = this.frontierDisks;
   }else if(this.type === 'mobility'){
     this.calculateValue = function(board) {
-      return this.mobility(board) + this.gameOver(board);
+      return this.mobility(board);
     }.bind(this);
     // this.calculateValue = this.mobility;
   } else {
     this.calculateValue = function(board) {
-      return this.mobility(board) + this.frontierDisks(board) + this.gameOver(board);
+      return this.mobility(board) + this.cornerHunter(board) + this.coinParity(board);
     }.bind(this);
   }
 }
@@ -30,25 +30,11 @@ function AI(pNum, type, maxDepth) {
  */
 AI.prototype.move = function(board) {
   this.visits = 0;
-  if(board.getAllMoves(this.pNum).length === 0){
-    return;
-  }
-  var res = this.minimax(board, 0, this.pNum, this.maxDepth, -1000, 1000);
+  var res = this.minimax(board, 0, this.pNum, this.maxDepth, -100000, 100000);
   console.log(this.visits)
-  console.dir(res);
+  // console.dir(res);
   return res.pos;
-  // var allMoves = board.getAllMoves(this.pNum);
-  // console.dir(allMoves);
-  // var move, bestMove, bestScore = 0, score;
-  // for (var i = allMoves.length - 1; i >= 0; i--) {
-  //   move = allMoves[i];
-  //   score = this.calculateValue(move.pos, board);
-  //   if(score > bestScore){
-  //     bestScore = score;
-  //     bestMove = move;
-  //   }
-  // }
-  // return bestMove ? bestMove.pos : false;
+
 }
 /**
  * Minimax algo
@@ -62,40 +48,49 @@ AI.prototype.move = function(board) {
  * @return {Number} result.move   Move that got you there
  */
 AI.prototype.minimax = function(board, depth, pNum, maxDepth, alpha, beta) {
+  // console.log(depth);
   this.visits++;
-  if(depth >= maxDepth){
+  var newBoard, score, move;
+  var bestMove;
+  var moves = board.getAllMoves(pNum);
+  if(depth >= maxDepth || moves.length === 0){
+    // console.log(this.calculateValue(board));
     return this.calculateValue(board);
   }
-
-  var newBoard, score, move, moves = board.getAllMoves(pNum);
   if(pNum === this.pNum){
     // Maximize
     for (var i = moves.length - 1; i >= 0; i--) {
       move = moves[i];
       newBoard = board.copy();
+      this._applyMove(newBoard, move.pos, pNum);
       score = this.minimax(newBoard, (depth + 1), (pNum ? 0 : 1), maxDepth, alpha, beta);
+      move.score = score;
       if(score > alpha){
         alpha = score;
+        bestMove = move;
       }
-      if(alpha >= beta){
+      if(beta <= alpha){
         break;
       }
     }
     if(depth === 0){
-      return move;
+      return bestMove;
     } else {
       return alpha;
     }
   } else {
     // Minimize
+    var min = 100000;
     for (var i = moves.length - 1; i >= 0; i--) {
       move = moves[i];
       newBoard = board.copy();
+      this._applyMove(newBoard, move.pos, pNum);
       score = this.minimax(newBoard, (depth + 1), (pNum ? 0 : 1), maxDepth, alpha, beta);
+
       if(score < beta){
         beta = score;
       }
-      if(alpha >= beta){
+      if(beta <= alpha){
         break;
       }
     }
@@ -113,14 +108,7 @@ AI.prototype._applyMove = function(board, pos, pNum) {
   board.players[pNum].move(pos, true); // !force
 }
 
-/**
- * Heuristic one. Frontier Disks - Less disks next to empty spots to minimize oponent mobility.
- * @param  {Object} pos             The position on the board to evaluate
- * @param  {Number} pos.x           The x coordinate
- * @param  {Number} pos.y           The y coordinate
- * @param  {[Object][Object]} board A two dimensional array ov objects representing the board
- * @return {Number}                 A score for the pos based on the heuristic
- */
+
 AI.prototype.frontierDisks = function(board) {
   // board = board.board;
   var piece, pieces = board.players[this.pNum].pieces;
@@ -179,33 +167,45 @@ AI.prototype.frontierDisks = function(board) {
       }
     }
   }
-  return score;
+  return 0 - score;
 }
 
-/**
- * Heuristic one. Frontier Disks - Less disks next to empty spots to minimize oponent mobility.
- * @param  {[Object][Object]} board  A board object
- * @param  {Number}           pNum   The player who we're evaluation their mobility
- * @return {Number}                  A score to evalute a players ability to move
- */
+
 AI.prototype.mobility = function(board) {
-  return board.getAllMoves(this.pNum).length;
+  var aiMoves = board.getAllMoves(this.pNum).length;
+  var oppMoves = board.getAllMoves(this.pNum ? 0 : 1).length;
+  return Math.ceil((oppMoves + aiMoves) === 0 ? 0 : 100 * ((aiMoves - oppMoves)/(aiMoves + oppMoves)));
 }
 
-AI.prototype.gameOver = function(board) {
-  var gameState = board.detectGameOver(this.pNum);
-  if(gameState < 0){
-    // A move resulting in neither player having moves
-    if(board.players[this.pNum].pieces.length > board.players[this.pNum].pieces.length){
-      // This player has more pieces
-      return 10000
-    } else {
-      // The other player has more pieces
-      return -10000
-    }
-  } else if (gameState !== this.pNum){
-    // A move resulting in no moves left for this player, not as bad as losing but still shit
-    return -1000;
+AI.prototype.cornerHunter = function(board) {
+  var board = board.board;
+  var oppCorners = 0, aiCorners = 0;
+  var oppNum = (this.pNum ? 0 : 1);
+  if(board[0][0].type !== 'p'+this.pNum){
+    aiCorners++;
+  }else if(board[0][0].type === 'p'+oppNum){
+    oppCorners++;
   }
-  // body...
-}
+  if(board[7][0].type !== 'p'+this.pNum){
+    aiCorners++;
+  }else if(board[7][0].type === 'p'+oppNum){
+    oppCorners++;
+  }
+  if(board[0][7].type !== 'p'+this.pNum){
+    aiCorners++;
+  }else if(board[0][7].type === 'p'+oppNum){
+    oppCorners++;
+  }
+  if(board[7][7].type !== 'p'+this.pNum){
+    aiCorners++;
+  }else if(board[7][7].type === 'p'+oppNum){
+    oppCorners++;
+  }
+  return Math.ceil(100 * ((aiCorners - oppCorners) / (aiCorners + oppCorners)));
+};
+
+AI.prototype.coinParity = function(board) {
+  var aiPieces = board.players[this.pNum].pieces.length;
+  var oppPieces = board.players[(this.pNum ? 0 : 1)].pieces.length;
+  return  Math.ceil(100 * ((aiPieces - oppPieces) / (aiPieces + oppPieces)));
+};
